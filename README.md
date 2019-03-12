@@ -36,13 +36,13 @@ git clone https://github.com/neuefische/data-fish.git
 
 ```sh
 conda env create --file environment.yml
-source activate data-fish
+source activate my_voice_predictor
 ```
 
 ## Usage
 
 ```sh
 conda env update --file environment.yml
-source activate data-fish
+source activate my_voice_predictor
 jupyter notebook
 ```
