@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from sklearn import preprocessing
 
-
 class Preprocessing:
     def __init__(self, name):
         self.name = name.lower()
@@ -23,6 +22,46 @@ class Preprocessing:
         df = getattr(pd, function_name)(filepath, **kwargs)
         self.data[name] = df
         return df
+
+    def load_all_texts_from_directory(self, path, *, name):
+        directory = f'{self.directory}/{path}'
+        all_files = os.listdir(directory)
+        assert len(all_files) > 0, 'directory is empty!'
+
+        n_files = 0
+        texts = []
+        for file in all_files:
+            rel_file_name = f'{path}/{file}'
+            texts += self.load_text(rel_file_name)
+            n_files = n_files + 1
+
+        self.data[name] = pd.DataFrame(texts, columns=['texts'])
+        print('loaded {} {} files to {}'.format(name, n_files, name))
+        return self.data[name]
+
+    def load_all_texts_from_directory_as_words(self, path, *, name):
+        directory = f'{self.directory}/{path}'
+        all_files = os.listdir(directory)
+        assert len(all_files) > 0, 'directory is empty!'
+
+        n_files = 0
+        words = []
+        for file in all_files:
+            rel_file_name = f'{path}/{file}'
+            words += self.load_text_as_raw_words(rel_file_name)
+            n_files = n_files + 1
+
+        self.data[name] = pd.DataFrame(words, columns=['words'])
+        print('loaded {} files to {}'.format(n_files, name))
+        return self.data[name]
+
+    def load_text(self, filename):
+        filepath = f'{self.directory}/{filename}'
+        f = open(filepath, "r")
+        return [f.read()]
+
+    def load_text_as_raw_words(self, filename):
+        return self.load_text(filename).split(' ')
 
     def save(self, name, filetype='csv', *, index=False, **kwargs):
         filepath = f'{self.directory}/{name}.{filetype}'
