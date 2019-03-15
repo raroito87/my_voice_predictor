@@ -25,10 +25,9 @@ class TextTransformer:
     def fit(self, X):
         #X is a DataFrame with a list of texts
 
+        all_words, word_columns_df = self._turn_texts_df_to_word_columns_df(X)
 
-        all_words, word_columns_df = self._turn_texts_df_to_words_columns_df(X)
-        X = self._clean_up_word_list(all_words)
-
+        X = all_words
         X['count'] = 1
         word_count = X.groupby('words').count()
         print(word_count.tail())
@@ -47,12 +46,16 @@ class TextTransformer:
             idx_top = idx_top + 1
 
         print('fit completed with features len {}: \n'.format(len(self.dict_features)))
+        print(self.dict_features)
         return self.dict_features
 
     def transform(self, X):
         assert len(self.dict_features), 'need to fit transform first!'
         #X is a DataFrame with a list of texts
         #We return a vector containing the frequency of the words in dict_features
+
+        all_words, word_columns_df = self._turn_texts_df_to_word_columns_df(X)
+        X = word_columns_df
 
         feature_matrix = []
         idx = 0
@@ -66,9 +69,11 @@ class TextTransformer:
 
             feature_matrix += [encoded_words]
             idx = idx + 1
-            print('T text ', idx)
 
         return pd.DataFrame(feature_matrix, columns=list(self.dict_features.keys()))
+
+
+    def fit_and_transform(self, X):
 
     def _clean_up_word_list(self, word_colums_df):
         #word_colums_df is a dataframe. the columns are the text with splitetd words
@@ -117,9 +122,9 @@ class TextTransformer:
             word_columns.append(words)
 
         all_words_df = pd.DataFrame(all_words, columns=['words'])
-        word_columns_df = pd.DataFrame(word_columns)#list(map(list, zip(*word_columns))))
+        text_df = pd.DataFrame(texts, columns=['texts'])#list(map(list, zip(*word_columns))))
 
-        return all_words_df, word_columns_df.transpose()
+        return all_words_df, text_df
 
     def _turn_text_to_words_df(self, text):
         #text is a string
