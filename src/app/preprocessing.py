@@ -1,6 +1,8 @@
 import os
 import pandas as pd
+import numpy as np
 from sklearn import preprocessing
+import re
 
 class Preprocessing:
     def __init__(self, name):
@@ -23,7 +25,7 @@ class Preprocessing:
         self.data[name] = df
         return df
 
-    def load_all_texts_from_directory(self, path, *, name):
+    def load_all_texts_from_directory(self, path, *, name, clean_text=True):
         directory = f'{self.directory}/{path}'
         all_files = os.listdir(directory)
         assert len(all_files) > 0, 'directory is empty!'
@@ -32,27 +34,17 @@ class Preprocessing:
         texts = []
         for file in all_files:
             rel_file_name = f'{path}/{file}'
-            texts += self.load_text(rel_file_name)
+            text = None
+            if clean_text:
+                text = self.load_clean_text(rel_file_name)
+            else:
+                text = self.load_text(rel_file_name)
+
+            texts += text
             n_files = n_files + 1
 
         self.data[name] = pd.DataFrame(texts, columns=['texts'])
         print('loaded {} {} files to {}'.format(name, n_files, name))
-        return self.data[name]
-
-    def load_all_texts_from_directory_as_words(self, path, *, name):
-        directory = f'{self.directory}/{path}'
-        all_files = os.listdir(directory)
-        assert len(all_files) > 0, 'directory is empty!'
-
-        n_files = 0
-        words = []
-        for file in all_files:
-            rel_file_name = f'{path}/{file}'
-            words += self.load_text_as_raw_words(rel_file_name)
-            n_files = n_files + 1
-
-        self.data[name] = pd.DataFrame(words, columns=['words'])
-        print('loaded {} files to {}'.format(n_files, name))
         return self.data[name]
 
     def load_text(self, filename):
@@ -60,8 +52,10 @@ class Preprocessing:
         f = open(filepath, "r")
         return [f.read()]
 
-    def load_text_as_raw_words(self, filename):
-        return self.load_text(filename).split(' ')
+    def load_clean_text(self, filename):
+        filepath = f'{self.directory}/{filename}'
+        f = open(filepath, "r")
+        return [self._clean_up_word_list_np(np.str.split(f.read(), sep=' '))]
 
     def save(self, name, filetype='csv', *, index=False, **kwargs):
         filepath = f'{self.directory}/{name}.{filetype}'
@@ -123,3 +117,18 @@ class Preprocessing:
 
     def set(self, name, value):
         self.data[name] = value
+
+    def _clean_up_word_list_np(self, words_np):
+
+        def functions(z):
+            #clean characters
+            z = re.sub(r'[^\w\s]', '', str(z))
+            #clean new line
+            z = re.sub(r'[\n]', '', str(z))
+            #all to lower case
+            z = str(z).lower()
+            #remove numbers
+            z = re.sub(r'[0-9]', '', str(z))
+            return str(z)
+
+        return np.apply_along_axis(functions, 0, words_np)
