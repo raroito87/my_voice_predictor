@@ -1,9 +1,8 @@
 from app import Preprocessing
 import pandas as pd
 import numpy as np
-
 import torch
-
+import argparse
 import time
 
 
@@ -23,15 +22,21 @@ def get_mini_batching(X_train, y_train, batch_size):
 
 if not __name__ == '__main_':
 
+    parser = argparse.ArgumentParser(description='IMDBData')
+    parser.add_argument('--n_feat', default=1000, help='number of features')
+    parser.add_argument('--s_model', default=False, help='save trained model')
+
+    args=parser.parse_args()
+
     pre = Preprocessing('IMDB')
 
-    pre.load_data(filename='training_data_1000.csv', name='training_data')
+    n_features = int(args.n_feat)
+    pre.load_data(filename=f'training_data_{n_features}.csv', name='training_data')
 
     X_df = pre.get(name='training_data').drop(columns=['target'])
     y_df = pre.get(name='training_data')['target']
 
-    print(X_df.tail())
-    print(y_df.tail())
+    print(X_df.head())
 
     #going to use torch
     dtype = torch.float
@@ -43,7 +48,7 @@ if not __name__ == '__main_':
 
     # Softmax regression model
 
-    n_features = X.size()[1]
+    #n_features = X.size()[1]
     n_classes = 2
 
     print('features: ', n_features)
@@ -60,7 +65,7 @@ if not __name__ == '__main_':
     size_batch = 256
     loss_hist = []
     # Train
-    start=time.time()
+    start = time.time()
 
     for t in range(5000):
         X_mini, y_mini = get_mini_batching(X, y, size_batch)
@@ -87,21 +92,8 @@ if not __name__ == '__main_':
     #plt.plot(loss_hist)
     #plt.show()
 
+    if args.s_model:
+        name = f'logreg_{n_features}.sav'
+        pre.save_model(model, name=name)
 
-    pre.load_data(filename='test_data_1000.csv', name='test_data')
-
-    X_test_df = pre.get(name='test_data').drop(columns=['target'])
-    y_test_df = pre.get(name='test_data')['target']
-
-
-    X_test = torch.tensor(X_test_df.values, device=device, dtype=dtype)
-    y_test = torch.tensor(y_test_df.values, device=device, dtype=torch.long)
-
-    y_pred = model(X_test).argmax(1)
-
-    accuracy_soft = (y_pred == y_test).float().mean()
-
-    #results = (y_test == y_pred)
-
-    #print(torch.sum(results).item()/len(results))
-    print(accuracy_soft.item())
+    print(f'model trained with {n_features} features')

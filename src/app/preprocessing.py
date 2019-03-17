@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 import re
+import pickle
 
 class Preprocessing:
     def __init__(self, name):
@@ -117,6 +118,20 @@ class Preprocessing:
 
     def set(self, name, value):
         self.data[name] = value
+
+    def save_model(self, model, name):
+        path = f'{self.directory}/model/'
+        if not os.path.exists(path):
+            print(f'created directory {path}')
+            os.makedirs(path)
+
+        filename = path + name
+        pickle.dump(model, open(filename, 'wb'))
+        print(f'saved model in {filename}')
+
+    def load_model(self, name):
+        filename = f'{self.directory}/model/{name}'
+        return pickle.load(open(filename, 'rb'))
 
     def _clean_up_word_list_np(self, words_np):
 
