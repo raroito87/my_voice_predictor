@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 
 
+
+
 class TextTransformer:
 
     def __init__(self,*,
@@ -12,6 +14,7 @@ class TextTransformer:
 
         self.num_words = int(num_words)
         self.dict_features = {}
+        self.stop_words = open("data/imdb/stopwords_eng.txt").read()
 
     def fit(self, X):
         #X is a DataFrame with a list of texts
@@ -70,9 +73,20 @@ class TextTransformer:
         all_words = self._turn_text_df_to_words_list(texts_df)
         return pd.DataFrame(all_words, columns=['words'])
 
-    def _create_bag_of_words(self, text):
+    def _create_bag_of_words(self, text, remove_stop_words = True):
         all_words = self._turn_texts_df_to_word_columns_df(text)
         all_words['count'] = 1
         word_count = all_words.groupby('words').count()
 
-        return list(word_count.sort_values('count', ascending=False).index)
+        all_word_list = list(word_count.sort_values('count', ascending=False).index)
+        word_list = []
+        if remove_stop_words:
+            print('remove stop words')
+            for word in all_word_list:
+                if word not in self.stop_words:
+                    word_list.append(word)
+
+        else:
+            word_list = word_list
+
+        return word_list

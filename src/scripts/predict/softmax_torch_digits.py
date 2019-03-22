@@ -3,8 +3,8 @@ import pickle
 import torch
 import torch.nn as nn
 
-from app import Preprocessing
-from app import Image_Importer
+from preprocessing_utils import Preprocessing
+from preprocessing_utils import Image_Importer
 
 from numpy import random
 

@@ -1,4 +1,4 @@
-from app import Preprocessing, TextTransformer
+from preprocessing_utils import Preprocessing, TextTransformer
 import argparse
 import pandas as pd
 import numpy as np
@@ -54,7 +54,6 @@ if not __name__ == '__main_':
 
     pre.set('test_data' + '_' + str(n_words), test_features)
     pre.save('test_data' + '_' + str(n_words))
-
     if args.s_model:
         name = f'word_transformer_{n_words}.sav'
         pre.save_model(text_transformer, name=name)

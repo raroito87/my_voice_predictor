@@ -1,4 +1,4 @@
-from app import Preprocessing
+from preprocessing_utils import Preprocessing, ModelImporter
 import torch
 import argparse
 
@@ -21,8 +21,13 @@ if not __name__ == '__main_':
     y_test = torch.tensor(y_test_df.values, device=device, dtype=torch.long)
 
     n_features = X_test.size()[1]
-    name = f'logreg_{n_features}.sav'
-    model = pre.load_model(name)
+    m_importer = ModelImporter('IMDB')
+
+
+    model_name = 'log_reg'
+    n_epochs = 100
+    n_classes = 2
+    model = m_importer.load_nn_model(model_name, n_features, n_classes, n_epochs)
 
     y_pred = model(X_test).argmax(1)
 
@@ -31,4 +36,5 @@ if not __name__ == '__main_':
     #results = (y_test == y_pred)
 
     #print(torch.sum(results).item()/len(results))
-    print(accuracy_soft.item())
+
+    print(f'test accuracy {accuracy_soft.item()}')

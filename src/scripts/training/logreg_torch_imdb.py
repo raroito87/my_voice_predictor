@@ -1,4 +1,4 @@
-from app import Preprocessing
+from preprocessing_utils import Preprocessing
 import pandas as pd
 import numpy as np
 import torch
@@ -56,7 +56,6 @@ if not __name__ == '__main_':
 
     model = torch.nn.Sequential(
         torch.nn.Linear(n_features, n_classes),
-        #torch.nn.Sigmoid()#softmax for multiclass
     )
 
     criterion = nn.CrossEntropyLoss()

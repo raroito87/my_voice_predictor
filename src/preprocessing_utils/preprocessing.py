@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 import re
-import pickle
+import torch
+import matplotlib.pyplot as plt
 
 class Preprocessing:
     def __init__(self, name):
@@ -119,6 +120,16 @@ class Preprocessing:
     def set(self, name, value):
         self.data[name] = value
 
+    #def save_model_(self, model, name):
+    #    path = f'{self.directory}/model/'
+    #    if not os.path.exists(path):
+    #        print(f'created directory {path}')
+    #        os.makedirs(path)
+#
+    #    filename = path + name
+    #    pickle.dump(model, open(filename, 'wb'))
+    #    print(f'saved model in {filename}')
+
     def save_model(self, model, name):
         path = f'{self.directory}/model/'
         if not os.path.exists(path):
@@ -126,12 +137,31 @@ class Preprocessing:
             os.makedirs(path)
 
         filename = path + name
-        pickle.dump(model, open(filename, 'wb'))
-        print(f'saved model in {filename}')
+        torch.save(model, filename)
 
     def load_model(self, name):
         filename = f'{self.directory}/model/{name}'
-        return pickle.load(open(filename, 'rb'))
+        return torch.load(filename)
+
+    def save_results(self, result_train, result_val, name):
+        title = name
+        plt.figure(1)
+        plt.plot(result_train)
+        plt.plot(result_val)
+        plt.title = title
+        self.save_plt_as_image(plt, title)
+        plt.close()
+
+    def save_plt_as_image(self, plt, name, format='.png'):
+        #!!!!!! call this before plt.show()
+        path = f'{self.directory}/plots/'
+        if not os.path.exists(path):
+            print(f'created directory {path}')
+            os.makedirs(path)
+
+        filename = path + name + format
+        print(f'save {filename}')
+        plt.savefig(filename)
 
     def _clean_up_word_list_np(self, words_np):
 
