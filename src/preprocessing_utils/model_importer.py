@@ -1,8 +1,10 @@
 import os
 import torch
-from models import LogReg, IMDB_NN_Model
+from models import LogReg, IMDB_NN_Model, Cnn_Digits
 from torch.optim import Adam
 
+#todo
+#domehow the modul should also be saved and loaded so I dont have to ass here all model classes as import
 class ModelImporter:
     def __init__(self, name):
         self.name = name.lower()
@@ -11,7 +13,6 @@ class ModelImporter:
         root_dir = os.path.dirname(__file__)
         directory_template = '{root_dir}/../../data/{name}/models/'
         self.directory = directory_template.format(root_dir=root_dir, name=name)
-
 
     def load_nn_model(self, model_name, n_features = 0, n_classes = 0, n_iter=0):
         file_name = f'{model_name}_{n_features}_{n_classes}_{n_iter}.pt'

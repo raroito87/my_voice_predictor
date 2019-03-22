@@ -20,11 +20,13 @@ class TrainClassifier():
 
         self.N = inputs_train.shape[0]
 
-        self.x = torch.tensor(inputs_train.values, device=self.model.device, dtype=self.model.dtype)
+        self.x = self.model.reshape_data(torch.tensor(inputs_train.values, device=self.model.device, dtype=self.model.dtype))
         self.y = torch.tensor(targets_train.values, device=self.model.device, dtype=torch.long).squeeze()
 
-        self.x_val = torch.tensor(inputs_val.values, device=self.model.device, dtype=self.model.dtype)
+        self.x_val = self.model.reshape_data(torch.tensor(inputs_val.values, device=self.model.device, dtype=self.model.dtype))
         self.y_val = torch.tensor(targets_val.values, device=self.model.device, dtype=torch.long).squeeze()
+
+
 
         del inputs_train
         del inputs_val
@@ -51,8 +53,7 @@ class TrainClassifier():
         for t in range(n_epochs):
             for batch in range(0, int(self.N / batch_size)):
                 # Berechne den Batch
-                batch_x = self.x[batch * batch_size: (batch + 1) * batch_size, :]
-                batch_y = self.y[batch * batch_size: (batch + 1) * batch_size]
+                batch_x, batch_y = self.model.get_batch(self.x, self.y, batch, batch_size)
 
                 # Berechne die Vorhersage (foward step)
                 outputs = self.model(batch_x)
@@ -67,17 +68,16 @@ class TrainClassifier():
 
             # Berechne den Fehler (Ausgabe des Fehlers alle 50 Iterationen)
             if t % 10 == 0:
-                outputs = self.model(self.x)
-                loss = criterion(outputs, self.y)
-                loss_hist.append(loss.item())
+                    outputs = self.model(self.x)
+                    loss = criterion(outputs, self.y)
+                    loss_hist.append(loss.item())
 
-                outputs_val = self.model(self.x_val)
-                loss_val = criterion(outputs_val, self.y_val)
-                loss_validate_hist.append(loss_val.item())
-                model_versions.append(copy.copy(self.model))
-
-                print(t, ' train_loss: ',loss.item(), 'validate_loss: ', loss_val.item())
+                    outputs_val = self.model(self.x_val)
+                    loss_val = criterion(outputs_val, self.y_val)
+                    loss_validate_hist.append(loss_val.item())
+                    model_versions.append(copy.copy(self.model))
+                    print(t, ' train_loss: ',loss.item(), 'validate_loss: ', loss_val.item())
 
         print(f'optimal iteration: {10*loss_validate_hist.index(min(loss_validate_hist))}')
 
-        return self.model, optimizer, criterion, loss_hist, loss_validate_hist,
+        return self.model, optimizer, criterion, loss_hist, loss_validate_hist

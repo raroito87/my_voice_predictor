@@ -9,7 +9,7 @@ if not __name__ == '__main_':
     args = parser.parse_args()
     n_feat = args.n_feat
 
-    pre = Preprocessing('IMDB')
+    pre = Preprocessing('digits')
     pre.load_data(filename=f'test_data_{n_feat}.csv', name='test_data')
 
     X_test_df = pre.get(name='test_data').drop(columns=['target'])

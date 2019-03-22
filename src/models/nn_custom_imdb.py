@@ -57,3 +57,15 @@ class IMDB_NN_Model(torch.nn.Module):
 
         pred = torch.max(z3.data, 1)[1]
         return (pred)
+
+    def get_batch(self, x, y, batch_idx, batch_size):
+        batch_x = self.x[batch_idx * batch_size: (batch_idx + 1) * batch_size, :]
+        batch_y = self.y[batch_idx * batch_size: (batch_idx + 1) * batch_size]
+
+        return batch_x, batch_y
+
+    def get_args(self):
+        return [self.name, self.d_in, self.H0, self.H1, self.d_out, self.dtype, self.device]
+
+    def reshape_data(self, x):
+        return x

@@ -26,3 +26,15 @@ class LogReg(torch.nn.Module):
         z = self.forward(x)
         pred = torch.max(z.data, 1)[1]
         return (pred)
+
+    def get_batch(self, x, y, batch_idx, batch_size):
+        batch_x = self.x[batch_idx * batch_size: (batch_idx + 1) * batch_size, :]
+        batch_y = self.y[batch_idx * batch_size: (batch_idx + 1) * batch_size]
+
+        return batch_x, batch_y
+
+    def reshape_data(self, x):
+        return x
+
+    def get_args(self):
+        return [self.name, self.d_in, self.d_out, self.dtype, self.device]
