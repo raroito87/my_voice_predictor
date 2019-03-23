@@ -1,6 +1,6 @@
 import os
 import torch
-from models import LogReg, IMDB_NN_Model, Cnn_Digits
+from models import LogReg, IMDB_NN_Model, Cnn_Digits, AnnDigits, CnnDigits2
 from torch.optim import Adam
 
 #todo
@@ -26,6 +26,8 @@ class ModelImporter:
         del the_dict['args']
         del the_dict['model_class']
         del the_dict['optimizer_class']
+
+        print(f'load model {model}')
 
         model.load_state_dict(state_dict=the_dict)
         model.eval()

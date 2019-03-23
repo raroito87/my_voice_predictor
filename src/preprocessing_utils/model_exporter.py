@@ -22,3 +22,5 @@ class ModelExporter:
 
         file_name = f'{model.name}_{n_features}_{n_classes}_{n_epochs}.pt'
         torch.save(the_dict, self.directory + file_name)
+
+        print(f'model saved {model}')

@@ -16,9 +16,6 @@ class Image_Importer:
         directory_template = '{root_dir}/../../data/{name}/images/'
         self.directory = directory_template.format(root_dir=root_dir, name=name)
 
-        if not os.path.exists(self.directory):
-            print(f'Creating "{name}" directory for you!')
-            os.makedirs(self.directory)
 
     def load_image_as_grey(self, number):
         filename = 'written' + str(number) +'.png'

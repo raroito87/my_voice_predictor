@@ -1,9 +1,9 @@
 import torch
 
 # Neural Network
-class LogReg(torch.nn.Module):
+class SVMDigits(torch.nn.Module):
     def __init__(self, name, d_in, d_out, dtype=torch.float, device='cpu'):
-        super(LogReg, self).__init__()
+        super(SVMDigits, self).__init__()
 
         self.dtype = dtype
         self.device = device

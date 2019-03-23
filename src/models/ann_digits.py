@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 # Neural Network
-class IMDB_NN_Model(torch.nn.Module):
+class AnnDigits(torch.nn.Module):
     def __init__(self, name, d_in, H0, H1, d_out, dtype=torch.float, device='cpu'):
-        super(IMDB_NN_Model, self).__init__()
+        super(AnnDigits, self).__init__()
 
         self.dtype = dtype
         self.device = device
@@ -68,3 +68,4 @@ class IMDB_NN_Model(torch.nn.Module):
 
     def reshape_data(self, x):
         return x
+

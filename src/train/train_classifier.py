@@ -80,4 +80,8 @@ class TrainClassifier():
 
         print(f'optimal iteration: {10*loss_validate_hist.index(min(loss_validate_hist))}')
 
+        y_pred = self.model(self.x).argmax(1)
+        accuracy_soft = (y_pred == self.y.long()).float().mean()
+        print(f'training accuracy: {accuracy_soft}')
+
         return self.model, optimizer, criterion, loss_hist, loss_validate_hist

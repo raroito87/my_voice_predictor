@@ -15,7 +15,7 @@ if not __name__ == '__main_':
     dtype = torch.float
     device = torch.device("cpu")
 
-    model_name = 'logreg_digits'
+    model_name = 'ann_digits'
 
     m_importer = ModelImporter('digits')
 
