@@ -15,7 +15,7 @@ class TrainClassifier():
         self.data_is_prepared = False
 
 
-    def prepare_data(self, test_size=0.2):
+    def prepare_data(self, test_size=0.1):
         inputs_train, inputs_val, targets_train, targets_val = train_test_split(self.inputs, self.targets, test_size=test_size)
 
         self.N = inputs_train.shape[0]
@@ -48,7 +48,7 @@ class TrainClassifier():
         # Train
         loss_hist = []
         loss_validate_hist = []
-        model_versions = []
+        model_versions = {}
 
         for t in range(n_epochs):
             for batch in range(0, int(self.N / batch_size)):
@@ -67,7 +67,8 @@ class TrainClassifier():
                 optimizer.step()
 
             # Berechne den Fehler (Ausgabe des Fehlers alle 50 Iterationen)
-            if t % 10 == 0:
+            idx = 2
+            if t % idx == 0:
                     outputs = self.model(self.x)
                     loss = criterion(outputs, self.y)
                     loss_hist.append(loss.item())
@@ -75,13 +76,13 @@ class TrainClassifier():
                     outputs_val = self.model(self.x_val)
                     loss_val = criterion(outputs_val, self.y_val)
                     loss_validate_hist.append(loss_val.item())
-                    model_versions.append(copy.copy(self.model))
+                    model_versions[loss_val.item()] = copy.copy(self.model.state_dict())
                     print(t, ' train_loss: ',loss.item(), 'validate_loss: ', loss_val.item())
 
-        print(f'optimal iteration: {10*loss_validate_hist.index(min(loss_validate_hist))}')
+        print(f'optimal iteration: {idx*loss_validate_hist.index(min(loss_validate_hist))}')
 
         y_pred = self.model(self.x).argmax(1)
         accuracy_soft = (y_pred == self.y.long()).float().mean()
         print(f'training accuracy: {accuracy_soft}')
 
-        return self.model, optimizer, criterion, loss_hist, loss_validate_hist
+        return self.model, optimizer, criterion, loss_hist, loss_validate_hist, model_versions[min(loss_validate_hist)]

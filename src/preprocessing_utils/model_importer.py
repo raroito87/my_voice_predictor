@@ -1,6 +1,7 @@
 import os
 import torch
-from models import LogReg, IMDB_NN_Model, Cnn_Digits, AnnDigits, CnnDigits2
+from models import LogReg, IMDB_NN_Model, Cnn_Digits, AnnDigits, CnnDigits2, CnnDigits4
+import torch.nn as nn
 from torch.optim import Adam
 
 #todo
