@@ -19,7 +19,7 @@ if not __name__ == '__main_':
     n_epochs = 200
 
     pre = Preprocessing('digits')
-    pre.load_data(filename='train.csv', name='train')
+    pre.load_data(filename='train_encoded.csv', name='train')
 
     X_df = pre.get(name='train').drop(columns=['0'])
     y_df = pre.get(name='train')['0']
@@ -27,8 +27,10 @@ if not __name__ == '__main_':
     dtype = torch.float
     device = torch.device("cpu")
 
-    model_name = 'logreg_digits'
-    model = LogReg(model_name, 256, n_classes)
+    print(len(X_df.columns))
+
+    model_name = 'logreg_digits_encoded'
+    model = LogReg(model_name, len(X_df.columns), n_classes)
 
     learning_rate = 0.0001
     batch_size = 32

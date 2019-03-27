@@ -25,14 +25,12 @@ class CnnDigits4(nn.Module):
 
 
         # Input channels = 1, output channels = 6
-        self.batchnorm1 = torch.nn.BatchNorm2d(ch_in)
         self.conv1 = torch.nn.Conv2d(ch_in, n_patterns1, kernel_size=5, stride=1, padding=2)
-
+        self.batchnorm1 = torch.nn.BatchNorm2d(n_patterns1)
 
         # Input channels = 6, output channels = 16
-        self.batchnorm2 = torch.nn.BatchNorm2d(n_patterns1)
         self.conv2 = torch.nn.Conv2d(n_patterns1, n_patterns2, kernel_size=3, stride=1, padding=1)
-
+        self.batchnorm2 = torch.nn.BatchNorm2d(n_patterns2)
 
         # Input channels = 16, output channels = 24
         #self.conv3 = torch.nn.Conv2d(n_patterns2, n_patterns3, kernel_size=3, stride=1, padding=1)
@@ -42,22 +40,20 @@ class CnnDigits4(nn.Module):
         self.pool = torch.nn.MaxPool2d(kernel_size=kernel_pool, stride=2, padding=0)
 
         # image size is reduce twice by the kernel pool, since we have two cnn
-        self.batchnorm_l1 = torch.nn.BatchNorm1d(int(n_patterns2 * size_im[0]/(kernel_pool**2) * size_im[1]/(kernel_pool**2)))
         self.fc1 = torch.nn.Linear(int(n_patterns2 * size_im[0]/(kernel_pool**2) * size_im[1]/(kernel_pool**2)), 32)
-
+        self.batchnorm_l1 = torch.nn.BatchNorm1d(32)
 
         # 64 input features, 10 output features for our 10 defined classes
-        self.batchnorm_l2 = torch.nn.BatchNorm1d(32)
-        self.fc2 = torch.nn.Linear(32, d_out)
+        self.fc2 = torch.nn.Linear(32, d_out)#last layer should not have normalization
 
     def forward(self, x):
         # Computes the activation of the first convolution
         # Size changes from (1, 16, 16) to (6, 16, 16)
-        x = F.relu(self.conv1(self.batchnorm1(x)))
+        x = F.relu(self.batchnorm1(self.conv1(x)))
         x = self.pool(x)
         self.detected_patterns1 = x
 
-        x = F.relu(self.conv2(self.batchnorm2(x)))
+        x = F.relu(self.batchnorm2(self.conv2(x)))
         x = self.pool(x)
         self.detected_patterns2 = x
 
@@ -68,12 +64,10 @@ class CnnDigits4(nn.Module):
 
         x = x.view(-1, int(self.n_patterns2 * self.size_im[0]/(self.kernel_pool**2) * self.size_im[1]/(self.kernel_pool**2)))
 
-        x = self.batchnorm_l1(x)
-        x = F.relu(self.fc1(x))
+        x = F.relu(self.batchnorm_l1(self.fc1(x)))
 
         # Computes the second fully connected layer (activation applied later)
         # Size changes from (1, 32) to (1, 10)
-        x = self.batchnorm_l2(x)
         x = self.fc2(x)
         return (x)
 

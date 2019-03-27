@@ -7,7 +7,7 @@ import torch
 if not __name__ == '__main_':
 
     pre = Preprocessing('digits')
-    pre.load_data(filename='test.csv', name='test')
+    pre.load_data(filename='test_encoded.csv', name='test')
 
     X_df = pre.get(name='test').drop(columns=['0'])
     y_df = pre.get(name='test')['0']
@@ -15,7 +15,7 @@ if not __name__ == '__main_':
     dtype = torch.float
     device = torch.device("cpu")
 
-    model_name = 'logreg_digits'
+    model_name = 'logreg_digits_encoded'
 
     m_importer = ModelImporter('digits')
 
